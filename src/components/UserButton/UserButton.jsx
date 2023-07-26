@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { Button } from "./UserButton.styled";
 
-
 export const UserButton = () => {
 	const [userAccount, setUserAccount] = useState(null);
 	const [userBalance, setUserBalance] = useState(null);
@@ -21,11 +20,10 @@ export const UserButton = () => {
 	useBalance({
 		address,
 		onSuccess(data) {
-			const balanceToSHow = Number(data.formatted).toFixed(3);
+			const balanceToSHow = Number(data?.formatted).toFixed(3);
 			setUserBalance(balanceToSHow);
 		},
 	});
-
 
 	async function onOpen() {
 		setLoading(true);
