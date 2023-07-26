@@ -25,17 +25,21 @@ import toast from "react-hot-toast";
 
 
 export const TransactionForm = () => {
+	const [userBalance, setUserBalance] = useState(0)
 	const [checksumError, setChecksumError] = useState(null);
 	const [hash, setHash] = useState('');
 	const { address } = useAccount();
-	const balanceData = useBalance({
+
+	useBalance({
 		address,
+		onSuccess(data) {
+			const balance = Number(data.formatted);
+			setUserBalance(balance);
+		},
 	});
 
 	const {
-		// data: transactionData,
 		isLoading: sendTransactionLoading,
-		// isSuccess: transactionSuccess,
 		sendTransactionAsync,
 		reset,
 	} = useSendTransaction({
@@ -45,8 +49,6 @@ export const TransactionForm = () => {
 	});
 
 	const {
-		// data: waitTransactionData,
-		// isError,
 		isLoading: waitTransactionLoading,
 	} = useWaitForTransaction({
 		hash,
@@ -80,10 +82,7 @@ export const TransactionForm = () => {
 				.required("Required"),
 			amount: Yup.number()
 				.min(0.000001, "The minimum amount is 0.000001")
-				.max(
-					Number(balanceData?.data.formatted),
-					"The amount is above your balance"
-				)
+				.max(userBalance, "The amount is above your balance")
 				.required("Required"),
 		});
 

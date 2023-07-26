@@ -20,8 +20,8 @@ export const UserButton = () => {
 	useBalance({
 		address,
 		onSuccess(data) {
-			const balanceToSHow = Number(data?.formatted).toFixed(3);
-			setUserBalance(balanceToSHow);
+		const balanceToSHow = Number(data.formatted).toFixed(3);
+		setUserBalance(balanceToSHow);
 		},
 	});
 
