@@ -1,5 +1,5 @@
 import { useWeb3Modal } from "@web3modal/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { Button } from "./UserButton.styled";
 
@@ -9,23 +9,23 @@ export const UserButton = () => {
 	const [userBalance, setUserBalance] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const { open } = useWeb3Modal();
-	const { address, isConnected } = useAccount();
-	const { data: balanceData } = useBalance({
-		address,
-	});
-	useEffect(() => {
-		if (isConnected && !userAccount && !userBalance) {
-			const addressShownOnBtn =
-				`${address?.slice(0, 5)}...${address?.slice(
-					address.length - 4,
-					address.length
-				)}` || "";
-
-			const balanceToSHow = Number(balanceData?.formatted).toFixed(3);
+	const { address, isConnected } = useAccount({
+		onConnect({ address }) {
+			const addressShownOnBtn = `${address.slice(0, 5)}...${address.slice(
+				address.length - 4,
+				address.length
+			)}`;
 			setUserAccount(addressShownOnBtn);
+		},
+	});
+	useBalance({
+		address,
+		onSuccess(data) {
+			const balanceToSHow = Number(data.formatted).toFixed(3);
 			setUserBalance(balanceToSHow);
-		}
-	}, [userAccount, balanceData, isConnected]);
+		},
+	});
+
 
 	async function onOpen() {
 		setLoading(true);

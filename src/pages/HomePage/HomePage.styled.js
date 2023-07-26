@@ -13,4 +13,10 @@ export const Container = styled.div`
 	padding-right: 20px;
 	background-color: #fafafa;
 	box-sizing: border-box;
+
+	@media ${media.tablet} {
+		padding-top: 30px;
+		padding-left: 40px;
+		padding-right: 40px;
+	}
 `;

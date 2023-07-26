@@ -22,13 +22,6 @@ export const Container = styled.div`
 	@media ${media.tablet} {
 		width: 500px;
 	}
-
-	@media ${media.desktop} {
-		margin: 0;
-		margin-top: auto;
-		margin-bottom: auto;
-		margin-right: auto;
-	}
 `;
 
 export const Header = styled.h1`
@@ -142,6 +135,11 @@ width: 100%;
 	@media ${media.tablet} {
 		height: 59px;
 	}
+`;
+
+export const CancelButton = styled(SubmitButton)`
+	background-color: #fafafa;
+	color: black;
 `;
 
 const InputContainer = styled.div`

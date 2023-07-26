@@ -4,13 +4,14 @@ import {
 	useBalance,
 	useWaitForTransaction,
 } from "wagmi";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ethers } from "ethers";
 import {
 	Container,
 	Header,
 	Form,
 	SubmitButton,
+	CancelButton,
 	WalletAddrInput,
 	ValueInput,
 	WalletAddrInputContainer,
@@ -30,39 +31,42 @@ export const TransactionForm = () => {
 	const balanceData = useBalance({
 		address,
 	});
+
 	const {
-		data: transactionData,
+		// data: transactionData,
 		isLoading: sendTransactionLoading,
-		isSuccess: transactionSuccess,
-		sendTransaction,
+		// isSuccess: transactionSuccess,
 		sendTransactionAsync,
+		reset,
 	} = useSendTransaction({
 		onSuccess() {
-			toast("Transaction sent")
+			toast.success("Transaction sent")
 		}
 	});
+
 	const {
-		data: waitTransactionData,
-		isError,
+		// data: waitTransactionData,
+		// isError,
 		isLoading: waitTransactionLoading,
 	} = useWaitForTransaction({
 		hash,
-		onSuccess(data) {
-			toast(data.status)
-			// console.log("Success", data);
+		onSuccess() {
+			toast.success("Transaction delivered successfully");
+			formik.values.address = '';
+			formik.values.amount = 0;
 		},
 	});
 
 	const onSubmit = async (data) => {
 	try {
-		const checkSum = ethers.getAddress(data.address);
+		ethers.getAddress(data.address);
 		const transaction = await sendTransactionAsync({
 			to: data.address,
 			value: ethers.parseEther(data.amount.toString()),
 		});
 		setHash(transaction.hash);
 	} catch (error) {
-		if (error.message.slice(0, 26)) toast("User rejected the request.");
+		if (error.message.slice(0, 26)) toast.error("User rejected the request.");
 		if (error.code === "INVALID_ARGUMENT")
 		setChecksumError("The Checksum hasn't been passed");
 	}
@@ -83,7 +87,7 @@ export const TransactionForm = () => {
 				.required("Required"),
 		});
 
-	const formik = useFormik({
+	var formik = useFormik({
 		initialValues,
 		onSubmit,
 		validationSchema,
@@ -96,6 +100,7 @@ export const TransactionForm = () => {
 			<Form onSubmit={formik.handleSubmit}>
 				<WalletAddrInputContainer>
 					<WalletAddrInput
+						disabled={sendTransactionLoading || waitTransactionLoading}
 						type="text"
 						name="address"
 						placeholder="Wallet address"
@@ -113,6 +118,7 @@ export const TransactionForm = () => {
 				</WalletAddrInputContainer>
 				<ValueInputContainer>
 					<ValueInput
+						disabled={sendTransactionLoading || waitTransactionLoading}
 						name="amount"
 						type="number"
 						placeholder="Value"
@@ -144,21 +150,36 @@ export const TransactionForm = () => {
 				</SubmitButton>
 				{waitTransactionLoading && (
 					<div
-						style={{ marginTop: 20, marginLeft: "auto", marginRight: "auto" }}
+						style={{
+							marginTop: 20,
+							marginLeft: "auto",
+							marginRight: "auto",
+							textAlign: "center",
+						}}
 					>
 						<span style={{ color: "yellow" }}>
-							Waiting for transaction complete...
+							Transaction complete is pending...Please wait
 						</span>
 					</div>
 				)}
 				{sendTransactionLoading && (
-					<div
-						style={{ marginTop: 20, marginLeft: "auto", marginRight: "auto" }}
-					>
-						<span style={{ color: "yellow" }}>
-							Please, confirm your transaction in MetaMask...
-						</span>
-					</div>
+					<>
+						<div
+							style={{
+								marginTop: 20,
+								marginLeft: "auto",
+								marginRight: "auto",
+								textAlign: "center",
+							}}
+						>
+							<span style={{ color: "yellow" }}>
+								Please, confirm your transaction in MetaMask...
+							</span>
+						</div>
+						<CancelButton type="button" onClick={() => reset()}>
+							Cancel
+						</CancelButton>
+					</>
 				)}
 			</Form>
 		</Container>
