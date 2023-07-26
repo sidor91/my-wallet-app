@@ -8,11 +8,14 @@ import {
 	configureChains,
 	createConfig,
 	WagmiConfig,
+	useAccount,
 } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { Toaster } from "react-hot-toast";
 import { HomePage } from "./pages/HomePage/HomePage";
 import { goerli, sepolia, mainnet } from "wagmi/chains";
+
+
 
 const { VITE_PROJECT_ID, VITE_ALCHEMY_API_KEY } = import.meta.env;
 
@@ -31,6 +34,9 @@ const wagmiConfig = createConfig({
 const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function App() {
+	
+
+
 	return (
 		<>
 			<WagmiConfig config={wagmiConfig}>
