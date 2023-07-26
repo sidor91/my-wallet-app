@@ -4,16 +4,15 @@ import { media } from "../../utils/media";
 export const Container = styled.div`
 	display: flex;
 	flex-direction: column;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 100px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 100px;
 	width: 100%;
 	border-radius: 30px;
 	box-sizing: border-box;
 	padding: 32px 28px 40px;
 	background-color: #2a2c36;
 	box-shadow: 0px 4px 48px 0px rgba(0, 0, 0, 0.1);
-
 
 	@media ${media.mobile} {
 		width: 335px;
@@ -92,26 +91,35 @@ export const Input = styled.input`
 `;
 
 export const WalletAddrInput = styled(Input)`
+	padding-right: 40px;
+	border-color: ${(prop) => {
+		if (prop.$haserror || prop.$checksumerror) {
+			return "red";
+		} else if (prop.$correct) {
+			return "green";
+		}
+	}};
 
+	@media ${media.tablet} {
+		padding-right: 45px;
+	}
 `;
 
 export const ValueInput = styled(Input)`
-	/* border-color: ${(prop) => {
+	border-color: ${(prop) => {
 		if (prop.$haserror) {
 			return "red";
 		} else if (prop.$correct) {
 			return "green";
 		}
-	}}; */
+	}};
 `;
 
-
-
 export const SubmitButton = styled.button`
-display: flex;
-justify-content: center;
-align-items: center;
-width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
 	height: 45px;
 	border-radius: 6px;
 	background-color: #8baa36;
@@ -140,9 +148,17 @@ width: 100%;
 export const CancelButton = styled(SubmitButton)`
 	background-color: #fafafa;
 	color: black;
+
+	&:hover {
+		transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) 0s;
+		color: #fafafa;
+		background-color: #8baa36;
+		cursor: pointer;
+	}
 `;
 
 const InputContainer = styled.div`
+	position: relative;
 	margin-bottom: 12px;
 	min-width: 100%;
 	position: relative;
@@ -154,8 +170,39 @@ const InputContainer = styled.div`
 `;
 
 export const WalletAddrInputContainer = styled(InputContainer)`
+
 `;
 
-export const ValueInputContainer = styled(InputContainer)`
-	
+export const ValueInputContainer = styled(InputContainer)``;
+
+export const InputErrorContainer = styled.div`
+	margin-top: 8px;
+	color: red;
+`;
+
+export const InputWarningContainer = styled.div`
+	margin-top: 10px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+`;
+
+export const InputWarningText = styled.p`
+	color: yellow;
+`;
+
+export const SuccessStatusIcon = styled.img`
+	width: 18px;
+	height: 18px;
+	position: absolute;
+	top: 13.5px;
+	right: 14px;
+	transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) 0s;
+
+	@media ${media.tablet} {
+		top: 17.5px;
+		right: 18px;
+		width: 20px;
+		height: 20px;
+	}
 `;

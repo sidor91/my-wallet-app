@@ -1,3 +1,4 @@
+import "./index.css"
 import {
 	EthereumClient,
 	w3mConnectors,
@@ -8,7 +9,6 @@ import {
 	configureChains,
 	createConfig,
 	WagmiConfig,
-	useAccount,
 } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { Toaster } from "react-hot-toast";

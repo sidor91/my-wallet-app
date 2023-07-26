@@ -16,18 +16,22 @@ import {
 	ValueInput,
 	WalletAddrInputContainer,
 	ValueInputContainer,
+	InputErrorContainer,
+	InputWarningContainer,
+	InputWarningText,
+	SuccessStatusIcon,
 } from "./TransactionForm.styled";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { RotatingLines } from "react-loader-spinner";
 import toast from "react-hot-toast";
-
-
+import inputIconSuccess from "../../assets/inputIconSuccess.svg";
+import inputIconError from "../../assets/inputIconError.svg";
 
 export const TransactionForm = () => {
-	const [userBalance, setUserBalance] = useState(0)
+	const [userBalance, setUserBalance] = useState(0);
 	const [checksumError, setChecksumError] = useState(null);
-	const [hash, setHash] = useState('');
+	const [hash, setHash] = useState("");
 	const { address } = useAccount();
 
 	useBalance({
@@ -44,47 +48,45 @@ export const TransactionForm = () => {
 		reset,
 	} = useSendTransaction({
 		onSuccess() {
-			toast.success("Transaction sent")
-		}
+			toast.success("Transaction sent");
+		},
 	});
 
-	const {
-		isLoading: waitTransactionLoading,
-	} = useWaitForTransaction({
+	const { isLoading: waitTransactionLoading } = useWaitForTransaction({
 		hash,
 		onSuccess() {
 			toast.success("Transaction delivered successfully");
-			formik.values.address = '';
+			formik.values.address = "";
 			formik.values.amount = 0;
 		},
 	});
 
 	const onSubmit = async (data) => {
-	try {
-		ethers.getAddress(data.address);
-		const transaction = await sendTransactionAsync({
-			to: data.address,
-			value: ethers.parseEther(data.amount.toString()),
-		});
-		setHash(transaction.hash);
-	} catch (error) {
-		if (error.message.slice(0, 26)) toast.error("User rejected the request.");
-		if (error.code === "INVALID_ARGUMENT")
-		setChecksumError("The Checksum hasn't been passed");
-	}
+		try {
+			ethers.getAddress(data.address);
+			const transaction = await sendTransactionAsync({
+				to: data.address,
+				value: ethers.parseEther(data.amount.toString()),
+			});
+			setHash(transaction.hash);
+		} catch (error) {
+			if (error.message.slice(0, 26)) toast.error("User rejected the request.");
+			if (error.code === "INVALID_ARGUMENT")
+				setChecksumError("The Checksum hasn't been passed");
+		}
 	};
 
-	const initialValues = { address: '', amount: 0 };
+	const initialValues = { address: "", amount: "" };
 
-		const validationSchema = Yup.object({
-			address: Yup.string()
-				.matches(/^0x[0-9A-Fa-f]{40}$/, "Invalid format")
-				.required("Required"),
-			amount: Yup.number()
-				.min(0.000001, "The minimum amount is 0.000001")
-				.max(userBalance, "The amount is above your balance")
-				.required("Required"),
-		});
+	const validationSchema = Yup.object({
+		address: Yup.string()
+			.matches(/^0x[0-9A-Fa-f]{40}$/, "Invalid format")
+			.required("Required"),
+		amount: Yup.number()
+			.min(0.000001, "The minimum amount is 0.000001")
+			.max(userBalance, "The amount is above your balance")
+			.required("Required"),
+	});
 
 	var formik = useFormik({
 		initialValues,
@@ -92,14 +94,20 @@ export const TransactionForm = () => {
 		validationSchema,
 	});
 
-
 	return (
 		<Container>
 			<Header>Make a transaction</Header>
 			<Form onSubmit={formik.handleSubmit}>
 				<WalletAddrInputContainer>
 					<WalletAddrInput
-						disabled={sendTransactionLoading || waitTransactionLoading}
+						$haserror={formik.touched.address && formik.errors.address}
+						$correct={
+							formik.touched.address &&
+							!formik.errors.address &&
+							formik.values.address !== ""
+						}
+						$checksumerror={checksumError}
+						disabled={sendTransactionLoading}
 						type="text"
 						name="address"
 						placeholder="Wallet address"
@@ -111,25 +119,61 @@ export const TransactionForm = () => {
 						onBlur={formik.handleBlur}
 					/>
 					{formik.touched.address && formik.errors.address && (
-						<div>{formik.errors.address}</div>
+						<>
+							<SuccessStatusIcon src={inputIconError} />
+							<InputErrorContainer>{formik.errors.address}</InputErrorContainer>
+						</>
 					)}
-					{checksumError && <div>{checksumError}</div>}
+					{formik.touched.address && !formik.errors.address && (
+						<SuccessStatusIcon src={inputIconSuccess} />
+					)}
+					{checksumError && (
+						<InputErrorContainer>{checksumError}</InputErrorContainer>
+					)}
 				</WalletAddrInputContainer>
 				<ValueInputContainer>
 					<ValueInput
-						disabled={sendTransactionLoading || waitTransactionLoading}
+						$haserror={formik.touched.amount && formik.errors.amount}
+						$correct={
+							formik.touched.amount &&
+							!formik.errors.amount &&
+							formik.values.amount !== ""
+						}
+						disabled={sendTransactionLoading}
 						name="amount"
 						type="number"
 						placeholder="Value"
 						step="0.000001"
+						min="0.000001"
+						max="100000"
 						onChange={formik.handleChange}
 						value={formik.values.amount}
 						onBlur={formik.handleBlur}
 					/>
 					{formik.touched.amount && formik.errors.amount && (
-						<div>{formik.errors.amount}</div>
+						<>
+							<SuccessStatusIcon src={inputIconError} />
+							<InputErrorContainer>{formik.errors.amount}</InputErrorContainer>
+						</>
+					)}
+					{formik.touched.amount && !formik.errors.amount && (
+						<SuccessStatusIcon src={inputIconSuccess} />
 					)}
 				</ValueInputContainer>
+				{waitTransactionLoading && (
+					<InputWarningContainer>
+						<InputWarningText>
+							Transaction complete is pending...Please wait
+						</InputWarningText>
+					</InputWarningContainer>
+				)}
+				{sendTransactionLoading && (
+					<InputWarningContainer>
+						<InputWarningText>
+							Please, confirm your transaction in MetaMask...
+						</InputWarningText>
+					</InputWarningContainer>
+				)}
 				<SubmitButton
 					type="submit"
 					disabled={sendTransactionLoading || waitTransactionLoading}
@@ -147,41 +191,12 @@ export const TransactionForm = () => {
 						visible={sendTransactionLoading || waitTransactionLoading}
 					/>
 				</SubmitButton>
-				{waitTransactionLoading && (
-					<div
-						style={{
-							marginTop: 20,
-							marginLeft: "auto",
-							marginRight: "auto",
-							textAlign: "center",
-						}}
-					>
-						<span style={{ color: "yellow" }}>
-							Transaction complete is pending...Please wait
-						</span>
-					</div>
-				)}
 				{sendTransactionLoading && (
-					<>
-						<div
-							style={{
-								marginTop: 20,
-								marginLeft: "auto",
-								marginRight: "auto",
-								textAlign: "center",
-							}}
-						>
-							<span style={{ color: "yellow" }}>
-								Please, confirm your transaction in MetaMask...
-							</span>
-						</div>
-						<CancelButton type="button" onClick={() => reset()}>
-							Cancel
-						</CancelButton>
-					</>
+					<CancelButton type="button" onClick={() => reset()}>
+						Cancel
+					</CancelButton>
 				)}
 			</Form>
 		</Container>
 	);
 };
-
