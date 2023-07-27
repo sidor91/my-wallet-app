@@ -42,12 +42,12 @@ export const TransactionForm = () => {
 		onSuccess() {
 			toast.success("Transaction delivered successfully");
 			formik.values.address = "";
-			formik.values.amount = 0;
+			formik.values.amount = "";
 		},
 		onError() {
 			toast.error("Transaction failed");
 			formik.values.address = "";
-			formik.values.amount = 0;
+			formik.values.amount = "";
 		},
 	});
 
