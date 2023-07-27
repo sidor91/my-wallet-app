@@ -1,5 +1,4 @@
 import styled from "styled-components";
-// import { media } from "../../utils/media";
 
 export const Button = styled.button`
 	width: fit-content;
@@ -12,8 +11,6 @@ export const Button = styled.button`
 	margin-left: auto;
 	cursor: pointer;
 
-	/* margin-top: 16px; */
-
 	font-size: 16px;
 	font-style: normal;
 	font-weight: 400;
@@ -24,3 +21,10 @@ export const Button = styled.button`
 		color: #22252a;
 	}
 `;
+
+export const Balance = styled.span`
+	margin-right: 10px;
+`;
+
+export const Account = styled.span`
+`

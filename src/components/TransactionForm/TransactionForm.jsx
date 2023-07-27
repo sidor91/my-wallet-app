@@ -1,9 +1,4 @@
-import {
-	useSendTransaction,
-	useAccount,
-	useBalance,
-	useWaitForTransaction,
-} from "wagmi";
+import { useSendTransaction, useWaitForTransaction } from "wagmi";
 import { useState } from "react";
 import { ethers } from "ethers";
 import {
@@ -29,18 +24,8 @@ import inputIconSuccess from "../../assets/inputIconSuccess.svg";
 import inputIconError from "../../assets/inputIconError.svg";
 
 export const TransactionForm = () => {
-	const [userBalance, setUserBalance] = useState(0);
 	const [checksumError, setChecksumError] = useState(null);
 	const [hash, setHash] = useState("");
-	const { address } = useAccount();
-
-	useBalance({
-		address,
-		onSuccess(data) {
-			const balance = Number(data.formatted);
-			setUserBalance(balance);
-		},
-	});
 
 	const {
 		isLoading: sendTransactionLoading,
@@ -59,6 +44,11 @@ export const TransactionForm = () => {
 			formik.values.address = "";
 			formik.values.amount = 0;
 		},
+		onError() {
+			toast.error("Transaction failed");
+			formik.values.address = "";
+			formik.values.amount = 0;
+		},
 	});
 
 	const onSubmit = async (data) => {
@@ -70,9 +60,11 @@ export const TransactionForm = () => {
 			});
 			setHash(transaction.hash);
 		} catch (error) {
-			if (error.message.slice(0, 26)) toast.error("User rejected the request.");
-			if (error.code === "INVALID_ARGUMENT")
+			if (error.code === "INVALID_ARGUMENT") {
 				setChecksumError("The Checksum hasn't been passed");
+			} else if (error.message.slice(0, 26) === "User rejected the request.") {
+				toast.error("User rejected the request.");
+			}
 		}
 	};
 
@@ -84,7 +76,7 @@ export const TransactionForm = () => {
 			.required("Required"),
 		amount: Yup.number()
 			.min(0.000001, "The minimum amount is 0.000001")
-			.max(userBalance, "The amount is above your balance")
+			.max(100000, "The maximum amount is 100000")
 			.required("Required"),
 	});
 
@@ -145,7 +137,6 @@ export const TransactionForm = () => {
 						placeholder="Value"
 						step="0.000001"
 						min="0.000001"
-						max="100000"
 						onChange={formik.handleChange}
 						value={formik.values.amount}
 						onBlur={formik.handleBlur}

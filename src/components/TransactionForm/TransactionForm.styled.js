@@ -37,11 +37,11 @@ export const Header = styled.h1`
 	line-height: 1.16;
 	letter-spacing: -0.48px;
 
-	/* @media ${media.tablet} {
+	@media ${media.tablet} {
 		font-size: 28px;
 		line-height: 1.07;
 		letter-spacing: -0.56px;
-	} */
+	}
 `;
 
 export const Form = styled.form`
@@ -61,6 +61,7 @@ export const Input = styled.input`
 	padding: 13.5px 20px;
 	color: #fafafa;
 	box-sizing: border-box;
+	padding-right: 40px;
 
 	font-size: 14px;
 	font-style: normal;
@@ -69,6 +70,7 @@ export const Input = styled.input`
 	letter-spacing: -0.28px;
 
 	@media ${media.tablet} {
+		padding-right: 45px;
 		height: 59px;
 		font-size: 18px;
 		letter-spacing: -0.36px;
@@ -91,7 +93,7 @@ export const Input = styled.input`
 `;
 
 export const WalletAddrInput = styled(Input)`
-	padding-right: 40px;
+	
 	border-color: ${(prop) => {
 		if (prop.$haserror || prop.$checksumerror) {
 			return "red";
@@ -100,9 +102,6 @@ export const WalletAddrInput = styled(Input)`
 		}
 	}};
 
-	@media ${media.tablet} {
-		padding-right: 45px;
-	}
 `;
 
 export const ValueInput = styled(Input)`
@@ -141,6 +140,7 @@ export const SubmitButton = styled.button`
 	}
 
 	@media ${media.tablet} {
+		margin-top: 28px;
 		height: 59px;
 	}
 `;
@@ -173,7 +173,9 @@ export const WalletAddrInputContainer = styled(InputContainer)`
 
 `;
 
-export const ValueInputContainer = styled(InputContainer)``;
+export const ValueInputContainer = styled(InputContainer)`
+margin-bottom: 0;
+`;
 
 export const InputErrorContainer = styled.div`
 	margin-top: 8px;
@@ -181,13 +183,13 @@ export const InputErrorContainer = styled.div`
 `;
 
 export const InputWarningContainer = styled.div`
-	margin-top: 10px;
+	margin-top: 20px;
 	margin-left: auto;
 	margin-right: auto;
 	text-align: center;
 `;
 
-export const InputWarningText = styled.p`
+export const InputWarningText = styled.span`
 	color: yellow;
 `;
 

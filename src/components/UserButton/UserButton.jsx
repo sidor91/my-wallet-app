@@ -1,7 +1,7 @@
 import { useWeb3Modal } from "@web3modal/react";
 import { useState } from "react";
 import { useAccount, useBalance } from "wagmi";
-import { Button } from "./UserButton.styled";
+import { Button, Balance, Account } from "./UserButton.styled";
 
 export const UserButton = () => {
 	const [userAccount, setUserAccount] = useState(null);
@@ -20,8 +20,8 @@ export const UserButton = () => {
 	useBalance({
 		address,
 		onSuccess(data) {
-		const balanceToSHow = Number(data.formatted).toFixed(3);
-		setUserBalance(balanceToSHow);
+			const balanceToSHow = Number(data.formatted).toFixed(3);
+			setUserBalance(balanceToSHow);
 		},
 	});
 
@@ -35,8 +35,9 @@ export const UserButton = () => {
 		<Button onClick={() => onOpen()} disabled={loading}>
 			{isConnected && (
 				<>
-					<span style={{ marginRight: 10 }}>{userBalance}</span>
-					<span>{userAccount}</span>
+					<Balance>{userBalance ? userBalance : "....."}</Balance>
+
+					<Account>{userAccount ? userAccount : "00000...0000"}</Account>
 				</>
 			)}
 			{!isConnected && !loading && "Connect Wallet"}
